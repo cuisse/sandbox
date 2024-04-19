@@ -36,4 +36,4 @@ P = select the current color at the mouse pointer
 ```
 
 ## Example
-![Gameplay](./assets/gameplay.gif)
+![Gameplay](./assets/Gameplay.gif)

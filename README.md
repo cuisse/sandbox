@@ -30,7 +30,7 @@ mvn exec:java -D"exec.mainClass"="io.github.cuisse.sandbox.App"
 Mouse = use for drawing 
 Left arrow = drop sand
 Up arrow = change sand color
-Left arrow = remove sand 
+Right arrow = remove sand 
 S = save current image 
 P = select the current color at the mouse pointer  
 ```

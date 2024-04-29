@@ -10,12 +10,17 @@ class Sand {
     Sand    next;
     int     color;
     Sandbox box;
+    boolean movable;
 
-    Sand(int x, int y, int c, Sandbox box) {
+    Sand(int x, int y, int c, Sandbox box, boolean movable) {
         this.x = x;
         this.y = y;
         this.box = box;
-        this.color = randomColor(c);
+        this.color = box.plainColor ? c : randomColor(c);
+        this.movable = movable;
+        if (this.movable == false) {
+            idle = Constants.PARTICLE_MAX_INACTIVITY_TIME;
+        }
     }
 
     boolean after(Sand other) {
@@ -25,23 +30,23 @@ class Sand {
         return false;
     }
 
-    void wakeup(Sandbox box) {
+    void wakeup() {
         if (idle >= Constants.PARTICLE_MAX_INACTIVITY_TIME) {
             idle = 0;
-            if (box.container.inside(x    , y - 1)) wakeup(box, box.container.get(x    , y - 1));
-            if (box.container.inside(x + 1, y - 1)) wakeup(box, box.container.get(x + 1, y - 1));
-            if (box.container.inside(x - 1, y - 1)) wakeup(box, box.container.get(x - 1, y - 1));
+            if (box.container.inside(x    , y - 1)) wakeup(box.container.get(x    , y - 1));
+            if (box.container.inside(x + 1, y - 1)) wakeup(box.container.get(x + 1, y - 1));
+            if (box.container.inside(x - 1, y - 1)) wakeup(box.container.get(x - 1, y - 1));
         }
     }
 
-    void wakeup(Sandbox box, Sand sand) {
+    void wakeup(Sand sand) {
         if (sand != null) {
-            sand.wakeup(box);
+            sand.wakeup();
         }
     }
 
-    void update(Sandbox box) {
-        if (box.container.inside(x, y + 1) == false || idle >= Constants.PARTICLE_MAX_INACTIVITY_TIME) {
+    void update() {
+        if (movable == false || box.container.inside(x, y + 1) == false || idle >= Constants.PARTICLE_MAX_INACTIVITY_TIME) {
             return;
         }
 
@@ -84,7 +89,9 @@ class Sand {
         }
 
         idle += 1;
+    }
 
+    void paint() {
         box.setPixel(x, y, color);
     }
 

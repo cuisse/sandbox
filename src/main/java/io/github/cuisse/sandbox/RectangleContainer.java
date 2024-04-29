@@ -36,4 +36,13 @@ class RectangleContainer implements Container {
     @Override
     public void paint() { }
 
+    @Override
+    public void clear() {
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                grid[i][j] = null;
+            }
+        }
+    }
+
 }

@@ -28,11 +28,22 @@ mvn exec:java -D"exec.mainClass"="io.github.cuisse.sandbox.App"
 ## Controls
 ```text
 Mouse = use for drawing 
-Left arrow = drop sand
-Up arrow = change sand color
-Right arrow = remove sand 
-S = save current image 
-P = select the current color at the mouse pointer  
+Mouse Left Button = create sand particles 
+Mouse Right Button = remove sand particles
+Mouse Wheel = change the size of the brush
+Mouse Center Click = pick up the current color at the mouse pointer  
+N = change sand color to a random color
+S = save current image as a png file
+B = toggle paint mode 
+C = clear the screen
+R = toggle random color mode
+I = toggle information 
+U = undo the last action
+T = toggle static mode
+P = toggle plain color mode
+L = open the color picker
+G = toggle brush randomness 
+
 ```
 
 ## Example

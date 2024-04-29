@@ -1,5 +1,7 @@
 package io.github.cuisse.sandbox;
 
+import java.util.ArrayList;
+import java.util.List;
 import processing.core.PApplet;
 import processing.core.PImage;
 
@@ -13,6 +15,9 @@ class Sandbox {
     int       updated;
     PApplet   applet;
     int       sand_color;
+    boolean   randomColor;
+    List<List<Sand>> history = new ArrayList<>();
+    boolean plainColor = false;
 
     Sandbox(Container container, PApplet applet, int w, int h) {
         this.image = applet.createImage(w, h, PApplet.RGB);
@@ -26,56 +31,54 @@ class Sandbox {
         image.pixels[x + y * image.width] = c;
     }
 
-    void removeSand(int x, int y) {
-        if (container.inside(x, y)) {
-            var sand = container.delete(x, y);
-            if (sand != null) {
-                if (last == null || sand.after(last)) {
-                    last = sand;
-                }
-                sand.wakeup(this);
-                count -= 1;
-                updated += 1;
-                setPixel(x, y, Constants.BACKGROUND_COLOR);
-                if (sand == head) {
-                    head = sand.next;
-                } else if (sand == tail) {
-                    tail = sand.prev;
+    int sandColor() {
+        if (randomColor) {
+            return applet.color(applet.random(1, 255), applet.random(1, 255), applet.random(1, 255));
+        }
+        return sand_color;
+    }
+
+    void sandColor(int color) {
+        sand_color = color;
+    }
+
+    void addParticles(List<Sand> particles) {
+        for (Sand sand : particles) {
+            count += 1;
+            updated += 1;
+            if (updated == 1) {
+                last = sand;
+            }
+            container.set(sand.x, sand.y, sand);
+            if (head == null) {
+                head = sand;
+                tail = head;
+            } else {
+                Sand current = sand;
+                if (head.next == null) {
+                    head.next = current;
+                    current.prev = head;
+                    tail = current;
                 } else {
-                    if (sand.prev != null) sand.prev.next = sand.next;
-                    if (sand.next != null) sand.next.prev = sand.prev;
+                    current.prev = tail;
+                    tail.next = current;
+                    tail = current;
                 }
             }
+        }
+        history.add(particles);
+        if (history.size() > Constants.MAX_HISTORY) {
+            history.remove(0);
         }
     }
 
-    Sand createSand(int x, int y, int c) {
-        if (container.inside(x, y) == false || container.get(x, y) != null) {
-            return null;
-        }
-        Sand sand = new Sand(x, y, c, this);
-        count += 1;
-        updated += 1;
-        if (updated == 1) {
-            last = sand;
-        }
-        container.set(x, y, sand);
-        if (head == null) {
-            head = sand;
-            tail = head;
-        } else {
-            Sand current = sand;
-            if (head.next == null) {
-                head.next    = current;
-                current.prev = head;
-                tail         = current;
-            } else {
-                current.prev = tail;
-                tail.next    = current;
-                tail         = current;
+    void undo() {
+        if (history.size() > 0) {
+            List<Sand> particles = history.remove(history.size() - 1);
+            for (Sand particle : particles) {
+                deleteParticle(particle);
             }
         }
-        return sand;
     }
 
     void update() {
@@ -83,7 +86,8 @@ class Sandbox {
             updated = 0;
             Sand sand = tail;
             while (sand != null) {
-                sand.update(this);
+                sand.update();
+                sand.paint();
                 if (sand == last) {
                     break;
                 }
@@ -92,8 +96,6 @@ class Sandbox {
             if (updated == 0) {
                 last = null;
             }
-            image.updatePixels();
-            container.paint();
             return;
         }
 
@@ -105,11 +107,51 @@ class Sandbox {
         updated = 0;
         Sand sand = tail;
         while (sand != null) {
-            sand.update(this);
+            sand.update();
+            sand.paint();
             sand = sand.prev;
         }
-        image.updatePixels();
+    }
+
+    void paint() {
+        image.updatePixels();   
         container.paint();
+    }
+
+    void deleteParticle(Sand sand) {
+        if (container.delete(sand.x, sand.y) == sand) {
+            sand.wakeup();
+            count   -= 1;
+            updated += 1;
+            setPixel(sand.x, sand.y, Constants.BACKGROUND_COLOR);
+            if (sand.prev != null) {
+                sand.prev.next = sand.next;
+            }
+            if (sand.next != null) {
+                sand.next.prev = sand.prev;
+            }
+            if (sand == head) {
+                head = sand.next;
+            }
+            if (sand == tail) {
+                tail = sand.prev;
+            }
+        }
+    }
+
+
+    void clear() {
+        container.clear();
+        head = null;
+        tail = null;
+        last = null;
+        count = 0;
+        updated = 0;
+        image.loadPixels();
+        for (int i = 0; i < image.pixels.length; i++) {
+            image.pixels[i] = Constants.BACKGROUND_COLOR;
+        }
+        image.updatePixels();
     }
     
 }

@@ -6,4 +6,5 @@ public interface Container {
     void    set(int x, int y, Sand sand);
     boolean inside(int x, int y);
     void    paint();
+    void    clear();
 }

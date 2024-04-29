@@ -10,8 +10,9 @@ public final class Constants {
     public static final int PIXEL_DENSITY = 1;
     public static final int PARTICLE_MAX_INACTIVITY_TIME = 5;
     public static final int BACKGROUND_COLOR = -16777216;
-    public static final int BRUSH_SIZE = 50;
+    public static final int DEFAULT_BRUSH_SIZE = 50;
     public static final float BRUSH_RANDOMNESS = 0.99f;
+    public static final int MAX_HISTORY = 1000;
 
     private Constants() {
         // Nope!

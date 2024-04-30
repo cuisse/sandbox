@@ -45,6 +45,3 @@ L = open the color picker
 G = toggle brush randomness 
 
 ```
-
-## Example
-![Gameplay](./assets/Gameplay.gif)
